@@ -1,0 +1,99 @@
+{
+    "os": "Linux-5.15.0-52-generic-x86_64-with-debian-bookworm-sid",
+    "python": "3.7.15",
+    "heartbeatAt": "2022-11-26T23:40:08.700187",
+    "startedAt": "2022-11-26T23:40:07.979896",
+    "docker": null,
+    "cuda": null,
+    "args": [],
+    "state": "running",
+    "program": "nli.py",
+    "codePath": "nli.py",
+    "host": "seacow-nlp",
+    "username": "seacow",
+    "executable": "/home/seacow/miniconda3/envs/spurious-cue/bin/python",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 2488.05175,
+        "min": 800.0,
+        "max": 5000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 1292.284,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        }
+    ],
+    "disk": {
+        "total": 913.3173141479492,
+        "used": 62.8978157043457
+    },
+    "gpu": "NVIDIA GeForce RTX 3070 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 3070 Laptop GPU",
+            "memory_total": 8589934592
+        }
+    ],
+    "memory": {
+        "total": 31.217735290527344
+    }
+}
