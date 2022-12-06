@@ -61,13 +61,12 @@ def main():
         print(snli_acc)
     
     else:
-        metadata, templates = utils.load_data('hans')
+        metadata, _ = utils.load_data('hans')
         train_data, val_data = metadata.values()
 
         train_data = utils.NLIDataset(train_data)
         val_data = utils.NLIDataset(val_data)
 
-        train_loader = train_data.get_data_loaders(args.batch_size)
         val_loader = val_data.get_data_loaders(args.batch_size)
 
         hans_acc = eval(nli_model, val_loader, args.eval_snli)

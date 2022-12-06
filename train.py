@@ -108,10 +108,10 @@ parser.add_argument(
 def main():
     args = parser.parse_args()
 
-    metadata, templates = utils.load_data(args.dataset)
+    metadata, _ = utils.load_data(args.dataset)
 
     if args.dataset == 'snli':
-        test_dat, val_data, train_data = metadata.values()
+        _, val_data, train_data = metadata.values()
     elif args.dataset == 'hans':
         train_data, val_data = metadata.values()
 
