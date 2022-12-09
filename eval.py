@@ -57,8 +57,9 @@ def main():
         test_data = utils.NLIDataset(test_data)
         test_loader = test_data.get_data_loaders(args.batch_size)
 
-        snli_acc = eval(nli_model, test_loader, args.eval_snli)
-        print(snli_acc)
+        acc, f1, _ = eval(nli_model, test_loader, args.eval_snli)
+        print(f'Accuracy score: {acc}')
+        print(f'F1 score: {f1}')
     
     else:
         metadata, _ = utils.load_data('hans')
@@ -69,8 +70,9 @@ def main():
 
         val_loader = val_data.get_data_loaders(args.batch_size)
 
-        hans_acc = eval(nli_model, val_loader, args.eval_snli)
-        print(hans_acc)
+        acc, f1, _ = eval(nli_model, val_loader, args.eval_snli)
+        print(f'Accuracy score: {acc}')
+        print(f'F1 score: {f1}')
 
 
     # # * Functions for sanity check

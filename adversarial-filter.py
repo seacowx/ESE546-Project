@@ -1,0 +1,70 @@
+import utils
+import argparse
+from tqdm import tqdm
+from transformers import BertForSequenceClassification, BertTokenizer
+
+import torch
+from sklearn.metrics import accuracy_score, f1_score
+
+device = 'cuda' if torch.cuda.is_available() else 'cpu'
+
+@torch.no_grad()
+def eval(model, dataloader, snli):
+    overall_acc = 0
+    overall_loss = 0
+    overall_f1 = 0
+    for idx, (input_ids, token_type_ids, attention_mask, lab) in enumerate(tqdm(dataloader, position=0, leave=False)):
+        input_ids, token_type_ids, attention_mask, lab = input_ids.to(device), token_type_ids.to(device), attention_mask.to(device), lab.to(device)
+        loss, pred = model(input_ids=input_ids, token_type_ids=token_type_ids, attention_mask=attention_mask, labels=lab).values()
+
+        pred = torch.argmax(pred, dim=1)
+        overall_acc += accuracy_score(lab.cpu(), pred.cpu())
+        overall_f1 += f1_score(lab.cpu(), pred.cpu(), average='macro')
+
+        overall_loss += loss.cpu().item()
+
+    return overall_acc / (idx + 1), overall_f1 / (idx + 1), overall_loss / (idx + 1)
+    
+
+parser = argparse.ArgumentParser()
+parser = argparse.ArgumentParser()
+parser.add_argument(
+    '--batch_size', type=int, default=16, help='batch size of the network'
+)
+parser.add_argument(
+    '--state_dict', type=str, help='name of the state dict'
+)
+
+
+def main():
+    args = parser.parse_args()
+
+    nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3).to(device)
+    nli_model.load_state_dict(torch.load(f'./{args.state_dict}.pt'))
+
+    metadata, templates = utils.load_data('snli')
+    test_data, _, _ = metadata.values()
+
+    test_data = utils.NLIDataset(test_data)
+    test_loader = test_data.get_data_loaders(args.batch_size, shuffle=False)
+
+    acc, f1, _ = eval(nli_model, test_loader, args.eval_snli)
+    print(f'Accuracy score: {acc}')
+    print(f'F1 score: {f1}')
+
+    # # * Functions for sanity check
+    # train_ids, _, _, labels = next(iter(train_loader))
+    # tokenizer = BertTokenizer.from_pretrained("bert-base-uncased")
+    # train_tokens = tokenizer.batch_decode(train_ids, skip_special_tokens=True)
+    # for t, l in zip(train_tokens, labels):
+    #     print(t)
+    #     print(l)
+    #     print('\n')
+    # raise SystemExit()
+
+
+
+
+if __name__ == '__main__':
+    utils.set_seed()
+    main()

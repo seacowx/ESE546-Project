@@ -99,7 +99,8 @@ def load_data(data_name):
     templates = DatasetTemplates(data_name)
     prompt_names = templates.all_template_names
     SELECTED_PROMPT_NAME = check_prompt_number(prompt_names, data_name)
-    templates = templates[SELECTED_PROMPT_NAME]
+    if SELECTED_PROMPT_NAME:
+        templates = templates[SELECTED_PROMPT_NAME]
     dataset = load_dataset(data_name)
     return dataset, templates
 

@@ -98,7 +98,7 @@ parser.add_argument(
     '--lr_rate', type=float, default=2e-4, help='learning rate'
 )
 parser.add_argument(
-    '--dataset', type=str, default='snli', help='dataset used for training. pick from "snli" and "hans"'
+    '--dataset', type=str, default='snli', help='dataset used for training. pick from "snli", "hans", "multi_nli"'
 )
 parser.add_argument(
     '--content', type=str, default='all', help='choose from "all" for premise + hypothesis; "premise" for premise-only and "hypothesis" for hypothesis only'
@@ -114,7 +114,9 @@ def main():
         _, val_data, train_data = metadata.values()
     elif args.dataset == 'hans':
         train_data, val_data = metadata.values()
-
+    elif args.dataset == 'multi_nli':
+        train_data, val_data, _ = metadata.values()
+    
     train_data = utils.NLIDataset(train_data, content=args.content)
     validation_data = utils.NLIDataset(val_data, content=args.content)
 
