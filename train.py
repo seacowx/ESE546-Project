@@ -9,6 +9,7 @@ import numpy as np
 from tqdm import tqdm
 from datasets import load_dataset
 from sklearn.metrics import accuracy_score
+import autoaug
 
 import torch
 import wandb
@@ -89,6 +90,9 @@ parser.add_argument(
     '--train_size', type=int, default=50000, help='size of training dataset'
 )
 parser.add_argument(
+    '--val_size', type=int, default=10000, help='size of validation dataset'
+)
+parser.add_argument(
     '--batch_size', type=int, default=16, help='batch size of the network'
 )
 parser.add_argument(
@@ -103,6 +107,9 @@ parser.add_argument(
 parser.add_argument(
     '--content', type=str, default='all', help='choose from "all" for premise + hypothesis; "premise" for premise-only and "hypothesis" for hypothesis only'
 )
+parser.add_argument(
+    '--apply_augment', type=bool, default=False, help='apply data augmentation to train data or not'
+)
 
 
 def main():
@@ -115,6 +122,13 @@ def main():
     elif args.dataset == 'hans':
         train_data, val_data = metadata.values()
 
+    train_data = train_data[:args.train_size]
+    val_data = val_data[:args.val_size]
+
+    if args.apply_augment:
+        train_data = autoaug.augment_data(train_data) #original train_size: 550k
+        val_data = autoaug.transform_label(val_data) #original val/test size: 10k
+    
     train_data = utils.NLIDataset(train_data, content=args.content)
     validation_data = utils.NLIDataset(val_data, content=args.content)
 
@@ -130,8 +144,8 @@ def main():
     #     print(l)
     #     print('\n')
     # raise SystemExit()
-
-    nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=3)
+    C = 2 if args.apply_augment else 3
+    nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=C)
     nli_model.to(device)
     train(nli_model, train_loader, validation_loader, args.n_epochs, args.lr_rate, args.dataset, args.content, log=True)
 

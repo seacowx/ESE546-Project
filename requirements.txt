@@ -4,3 +4,5 @@ sentencepiece
 torch
 scikit-learn
 wandb
+nltk
+lime
