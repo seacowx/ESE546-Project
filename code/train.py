@@ -128,13 +128,13 @@ def main():
         train_data, val_data = metadata.values()
     elif args.dataset == 'multi_nli':
         train_data, val_data, _ = metadata.values()
+    
+    train_data = train_data[:args.train_size]
+    val_data = val_data[:args.val_size]
 
     if args.apply_augment:
         train_data = autoaug.augment_data(train_data) #original train_size: 550k
         val_data = autoaug.transform_label(val_data) #original val/test size: 10k
-
-    train_data = train_data[:args.train_size]
-    val_data = val_data[:args.val_size]
     
     train_data = utils.NLIDataset(train_data, content=args.content)
     validation_data = utils.NLIDataset(val_data, content=args.content)
