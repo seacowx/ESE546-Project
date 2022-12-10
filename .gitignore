@@ -128,8 +128,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+<<<<<<< HEAD
 #guanwen
 datasets/
 guanwen/state_dicts/
 papers/
 trained_state/
+=======
+# state dict folder
+/state-dicts
+>>>>>>> origin/main
