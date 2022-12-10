@@ -58,7 +58,7 @@ def main():
     C = 2 if args.after_augment else 3
 
     nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=C).to(device)
-    nli_model.load_state_dict(torch.load(f'./{args.state_dict}.pt'))
+    nli_model.load_state_dict(torch.load(f'../state-dicts/{args.state_dict}.pt'))
 
     if args.eval_snli:
         metadata, templates = utils.load_data('snli')

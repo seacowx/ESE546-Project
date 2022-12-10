@@ -128,9 +128,21 @@ def main():
         train_data, val_data = metadata.values()
     elif args.dataset == 'multi_nli':
         train_data, val_data, _ = metadata.values()
-    
-    train_data = train_data[:args.train_size]
-    val_data = val_data[:args.val_size]
+
+    if args.dataset != 'anli_diy':
+        train_data = train_data[:args.train_size]
+        val_data = val_data[:args.val_size]
+    else:
+        train_data = {
+            'premise': train_data['premise'][: args.train_size],
+            'hypothesis': train_data['hypothesis'][: args.train_size],
+            'label': train_data['label'][: args.train_size]
+        }
+        val_data = {
+            'premise': val_data['premise'][: args.train_size],
+            'hypothesis': val_data['hypothesis'][: args.train_size],
+            'label': val_data['label'][: args.train_size]
+        }
 
     if args.apply_augment:
         train_data = autoaug.augment_data(train_data) #original train_size: 550k
