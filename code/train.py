@@ -70,7 +70,6 @@ def train(model, train_loader, validation_loader, n_epochs, lr_rate, data_name, 
                         val_loss_all += val_loss
                         val_total += 1
 
-                        
                     val_acc = val_acc_all / val_total
                     val_loss = val_loss_all / val_total
 
@@ -81,7 +80,7 @@ def train(model, train_loader, validation_loader, n_epochs, lr_rate, data_name, 
                             })
 
                     if val_acc > best_val_acc:
-                        torch.save(model.state_dict(), f'./{data_name}_{content}_state_dict.pt')
+                        torch.save(model.state_dict(), f'../state-dicts/{data_name}_{content}_state_dict.pt')
 
 
 parser = argparse.ArgumentParser()
@@ -98,7 +97,7 @@ parser.add_argument(
     '--lr_rate', type=float, default=2e-4, help='learning rate'
 )
 parser.add_argument(
-    '--dataset', type=str, default='snli', help='dataset used for training. pick from "snli", "hans", "multi_nli"'
+    '--dataset', type=str, default='snli', help='dataset used for training. pick from "snli", "hans", "multi_nli", "anli_diy"'
 )
 parser.add_argument(
     '--content', type=str, default='all', help='choose from "all" for premise + hypothesis; "premise" for premise-only and "hypothesis" for hypothesis only'
@@ -108,7 +107,14 @@ parser.add_argument(
 def main():
     args = parser.parse_args()
 
-    metadata, _ = utils.load_data(args.dataset)
+    if args.dataset != 'anli_diy':
+        metadata, _ = utils.load_data(args.dataset)
+    else: 
+        with open('../anli_diy.json', 'r') as f:
+            train_data = json.load(f)
+        f.close()
+        metadata, _ = utils.load_data('snli')
+        _, val_data, _ = metadata.values()
 
     if args.dataset == 'snli':
         _, val_data, train_data = metadata.values()
