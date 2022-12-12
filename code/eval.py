@@ -65,12 +65,11 @@ def main():
         test_data, _, _ = metadata.values()
 
         idx = random.sample(range(len(test_data)), args.test_size)
-        test_data = test_data[:args.test_size]
-
-        print('Random guess acc:', sum([1 if lab == 0 or lab == 1 else 0 for lab in test_data['label']])/len(test_data['label']))
+        test_data = test_data[:args.test_size]  
 
         if args.after_augment:
             test_data = autoaug.transform_label(test_data)
+            print('Random guess acc:', sum([1 if lab == 0 or lab == 1 else 0 for lab in test_data['label']])/len(test_data['label']))
 
         test_data = utils.NLIDataset(test_data)
         test_loader = test_data.get_data_loaders(args.batch_size)

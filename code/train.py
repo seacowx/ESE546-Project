@@ -143,10 +143,10 @@ def main():
             'hypothesis': val_data['hypothesis'][: args.train_size],
             'label': val_data['label'][: args.train_size]
         }
-
+    
     if args.apply_augment:
-        train_data = autoaug.augment_data(train_data) #original train_size: 550k
-        val_data = autoaug.transform_label(val_data) #original val/test size: 10k
+        train_data = autoaug.transform_label(train_data)
+        train_data = autoaug.iter_aug(train_data) #original train_size: 550k
     
     train_data = utils.NLIDataset(train_data, content=args.content)
     validation_data = utils.NLIDataset(val_data, content=args.content)
