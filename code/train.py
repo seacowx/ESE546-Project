@@ -6,7 +6,7 @@ import pickle
 import argparse
 import numpy as np
 from tqdm import tqdm
-from datasets import load_dataset
+from datasets import load_dataset, concatenate_datasets
 from sklearn.metrics import accuracy_score
 import autoaug
 
@@ -94,7 +94,7 @@ parser.add_argument(
     '--batch_size', type=int, default=16, help='batch size of the network'
 )
 parser.add_argument(
-    '--n_epochs', type=int, default=10, help='number of epochs'
+    '--epochs', type=int, default=10, help='number of epochs'
 )
 parser.add_argument(
     '--lr_rate', type=float, default=2e-4, help='learning rate'
@@ -128,6 +128,10 @@ def main():
         train_data, val_data = metadata.values()
     elif args.dataset == 'multi_nli':
         train_data, val_data, _ = metadata.values()
+    elif args.dataset == 'anli':
+        train_r1, val_r1, _, train_r2, val_r2, _, train_r3, val_r3, _ = metadata.values()
+        train_data = concatenate_datasets([train_r1, train_r2, train_r3])
+        val_data = concatenate_datasets([val_r1, val_r2, val_r3])
 
     if args.dataset != 'anli_diy':
         train_data = train_data[:args.train_size]
@@ -166,7 +170,7 @@ def main():
     C = 2 if args.apply_augment else 3
     nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=C)
     nli_model.to(device)
-    train(nli_model, train_loader, validation_loader, args.n_epochs, args.lr_rate, args.dataset, args.content, log=True)
+    train(nli_model, train_loader, validation_loader, args.epochs, args.lr_rate, args.dataset, args.content, log=True)
 
 
 if __name__ == '__main__':
