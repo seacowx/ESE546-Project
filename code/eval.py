@@ -51,6 +51,9 @@ parser.add_argument(
 parser.add_argument(
     '--state_dict', type=str, help='name of the state dict'
 )
+parser.add_argument(
+    '--model', type=str, default='bert', help='select from "bert" and "mbert"(multilingual-bert)'
+)
 
 
 def main():
@@ -58,8 +61,15 @@ def main():
 
     C = 2 if args.after_augment else 3
 
-    nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=C).to(device)
-    nli_model.load_state_dict(torch.load(f'../state-dicts/{args.state_dict}.pt'))
+    if args.model == 'bert':
+        tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
+        nli_model = BertForSequenceClassification.from_pretrained("bert-base-uncased", num_labels=C).to(device)
+        nli_model.load_state_dict(torch.load(f'../state-dicts/{args.state_dict}.pt'))
+    elif args.model == 'mbert':
+        tokenizer = BertTokenizer.from_pretrained('bert-base-multilingual-uncased', do_lower_case=True)
+        nli_model = BertForSequenceClassification.from_pretrained("bert-base-multilingual-uncased", num_labels=C).to(device)
+        nli_model.load_state_dict(torch.load(f'../state-dicts/{args.state_dict}.pt'))
+
 
     if args.eval_dataset == 'snli':
         metadata, _ = utils.load_data('snli')
@@ -95,7 +105,7 @@ def main():
         _, _, test_data = metadata.values()
         binary = False
 
-    test_data = utils.NLIDataset(test_data)
+    test_data = utils.NLIDataset(args.eval_dataset, test_data, tokenizer)
     test_loader = test_data.get_data_loaders(args.batch_size)
 
     acc, f1, _ = eval(nli_model, test_loader, binary)
