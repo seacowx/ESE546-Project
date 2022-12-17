@@ -26,3 +26,18 @@ def prediction(model, data_loader, device, adv=False):
             
     return torch.concat(preds_list), torch.concat(labels_list)
     
+def prediction_hypothesis_cls(model, data_loader, device):
+    model.eval()
+    preds_list = []
+    labels_list = []
+    model.to(device)
+    with torch.no_grad():
+        for premise, hypothesis, labels in data_loader:
+            hypothesis = (hypothesis[0].to(device), hypothesis[1].to(device), hypothesis[2].to(device))
+            labels = labels.to(device)
+            pred = softmax(model(hypothesis), dim=1)
+            
+            preds_list.append(pred)
+            labels_list.append(labels)
+            
+    return torch.concat(preds_list), torch.concat(labels_list)

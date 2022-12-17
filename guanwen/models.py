@@ -38,6 +38,7 @@ class SameDistilBertClassifier(nn.Module):
         nn.BatchNorm1d(BERT_OUTPUT_SIZE//8),
         nn.Linear(BERT_OUTPUT_SIZE//8, 3),
     )
+    
 
   def forward(self, premise, hypothesis):
     premise_re = self.g(input_ids=premise[0],attention_mask=premise[2])["last_hidden_state"][:,0,:]
@@ -47,6 +48,52 @@ class SameDistilBertClassifier(nn.Module):
     o= self.cf(concated)
     #print(o.shape)
     return o
+
+class AdvDatSameDistilBertClassifier(nn.Module):
+  def __init__(self, alpha):
+    super().__init__()
+    # output size in (batch_size, seq_len, 768)
+    self.g = DistilBertModel.from_pretrained("distilbert-base-uncased")
+    self.cf = nn.Sequential(
+        nn.Linear(4*BERT_OUTPUT_SIZE, BERT_OUTPUT_SIZE),
+        nn.Dropout(0.5),
+        #nn.BatchNorm1d(BERT_OUTPUT_SIZE),
+        nn.Linear(BERT_OUTPUT_SIZE,BERT_OUTPUT_SIZE//8),
+        nn.Dropout(0.5),
+        #nn.BatchNorm1d(BERT_OUTPUT_SIZE//8),
+        nn.Linear(BERT_OUTPUT_SIZE//8, 3),
+    )
+    self.hypothesis_gr = GradientReversalLayer(alpha)
+    self.premise_gr = GradientReversalLayer(0)
+    self.alpha = alpha
+    
+
+  def forward(self, premise, hypothesis, perturb_mask):
+    res = [None, None]
+    if 0 in perturb_mask:
+        unperturb_premise = (premise[0][perturb_mask==0], premise[2][perturb_mask==0])
+        unperturb_hypothesis = (hypothesis[0][perturb_mask==0], hypothesis[2][perturb_mask==0])
+        unperturb_premise_re = self.g(input_ids=unperturb_premise[0],attention_mask=unperturb_premise[1])["last_hidden_state"][:,0,:]
+        unperturb_hypothesis_re = self.g(input_ids=unperturb_hypothesis[0], attention_mask=unperturb_hypothesis[1])["last_hidden_state"][:,0,:]
+        unperturb_concated = torch.concat([unperturb_premise_re-unperturb_hypothesis_re, 
+                                           unperturb_premise_re*unperturb_hypothesis_re, unperturb_premise_re, unperturb_hypothesis_re], dim=1)
+        o_unperturb = self.cf(unperturb_concated)
+        res[0] = o_unperturb
+        
+    
+    
+    
+    if 1 in perturb_mask:
+        perturb_premise = (premise[0][perturb_mask==1], premise[2][perturb_mask==1])
+        perturb_hypothesis = (hypothesis[0][perturb_mask==1], hypothesis[2][perturb_mask==1])
+        perturb_premise_re = self.premise_gr(self.g(input_ids=perturb_premise[0],attention_mask=perturb_premise[1])["last_hidden_state"][:,0,:])
+        perturb_hypothesis_re = self.hypothesis_gr(self.g(input_ids=perturb_hypothesis[0], attention_mask=perturb_hypothesis[1])["last_hidden_state"][:,0,:])
+        perturb_concated = torch.concat([perturb_premise_re-perturb_hypothesis_re, 
+                                         perturb_premise_re*perturb_hypothesis_re, 
+                                         perturb_premise_re, perturb_hypothesis_re], dim=1)
+        o_perturb = self.cf(perturb_concated)
+        res[1] = o_perturb
+    return tuple(res)
 
 class BasicDoubleDistilBertClassifier(nn.Module):
   def __init__(self):
@@ -132,6 +179,27 @@ class GradientReversalLayer(nn.Module):
   def forward(self, x):
     return revgrad(x, self.alpha)
 
+class HypothesisLabelClassifier(nn.Module):
+    def __init__(self, encoder):
+        super().__init__()
+        self.bias_classifier = nn.Sequential(
+            nn.Linear(BERT_OUTPUT_SIZE, BERT_OUTPUT_SIZE//8),
+            nn.Dropout(0.5),
+            nn.BatchNorm1d(BERT_OUTPUT_SIZE//8),
+            nn.Linear(BERT_OUTPUT_SIZE//8,BERT_OUTPUT_SIZE//16),
+            nn.Dropout(0.5),
+            nn.BatchNorm1d(BERT_OUTPUT_SIZE//16),
+            nn.Linear(BERT_OUTPUT_SIZE//16, 3),
+        )
+        self.encoder = encoder
+        for param in self.encoder.parameters():
+            param.requires_grad = False
+    
+    def forward(self, hypothesis):
+        re = self.encoder(input_ids=hypothesis[0], attention_mask=hypothesis[2])["last_hidden_state"][:,0,:]
+        
+        o = self.bias_classifier(re)
+        return o
 
 class AdversialSameDistilBertClassifier(nn.Module):
   def __init__(self, alpha):
@@ -166,3 +234,6 @@ class AdversialSameDistilBertClassifier(nn.Module):
     label_prediction_combined = self.cf(concated)
     label_prediction_hypothesis = self.bias_classifier(self.gradient_reversal(hypothesis_re))
     return label_prediction_combined, label_prediction_hypothesis
+
+  def hypothesis_embedding(self, hypothesis):
+    return self.g(input_ids=hypothesis[0], attention_mask=hypothesis[2])["last_hidden_state"][:,0,:]
