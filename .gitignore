@@ -128,5 +128,13 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
+
+#guanwen
+datasets/
+guanwen/state_dicts/
+guanwen/wandb
+papers/
+trained_state/
+
 # state dict folder
 /state-dicts
