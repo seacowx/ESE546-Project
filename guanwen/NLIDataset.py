@@ -23,7 +23,7 @@ class NLIDataset(Dataset):
     if label_perturb:
         assert(not fraction is None)
         premise, hypothesis, labels = np.array(premise), np.array(hypothesis),np.array(labels)
-        split_index = round(len(labels)*fraction)
+        split_index = round(len(labels)*(1-fraction))
         #This is an inplace operation!
         perturbing_premise = premise[split_index:]
         premise[split_index:] = perturbing_premise[torch.randperm(len(perturbing_premise))]
