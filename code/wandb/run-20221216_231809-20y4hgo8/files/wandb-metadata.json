@@ -1,0 +1,116 @@
+{
+    "os": "Linux-5.15.0-56-generic-x86_64-with-debian-bookworm-sid",
+    "python": "3.7.15",
+    "heartbeatAt": "2022-12-17T04:18:09.544574",
+    "startedAt": "2022-12-17T04:18:09.258154",
+    "docker": null,
+    "cuda": null,
+    "args": [
+        "--dataset",
+        "snli",
+        "--content",
+        "all",
+        "--epochs",
+        "10",
+        "--model",
+        "bert",
+        "--mix_frac",
+        "0.3"
+    ],
+    "state": "running",
+    "program": "train.py",
+    "codePath": "code/train.py",
+    "git": {
+        "remote": "https://github.com/SeacowX/ESE546-Project.git",
+        "commit": "4f754aa531c12c1236d4392bd5dfcbdeaba0a11d"
+    },
+    "email": "jxu9716@gmail.com",
+    "root": "/home/seacow/Github/ESE546-Project",
+    "host": "Seacow-Blade",
+    "username": "seacow",
+    "executable": "/home/seacow/miniconda3/envs/ese546/bin/python",
+    "cpu_count": 6,
+    "cpu_count_logical": 12,
+    "cpu_freq": {
+        "current": 2669.2876666666666,
+        "min": 800.0,
+        "max": 5000.0
+    },
+    "cpu_freq_per_core": [
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 3431.452,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        },
+        {
+            "current": 2600.0,
+            "min": 800.0,
+            "max": 5000.0
+        }
+    ],
+    "disk": {
+        "total": 914.7832870483398,
+        "used": 74.41721725463867
+    },
+    "gpu": "NVIDIA GeForce RTX 3070 Laptop GPU",
+    "gpu_count": 1,
+    "gpu_devices": [
+        {
+            "name": "NVIDIA GeForce RTX 3070 Laptop GPU",
+            "memory_total": 8589934592
+        }
+    ],
+    "memory": {
+        "total": 31.21773910522461
+    }
+}
