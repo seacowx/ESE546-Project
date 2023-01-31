@@ -4,7 +4,7 @@
 [Don't Cheat! Catching Spurious Correlation in NLI Tasks](Spurious_Correlation_in_NLI.pdf)
 
 ## Project Grade
-100/100 (Best Project Award)
+*100/100* ==(Best Project Award)==
 
 
 Install dependencies from `requirements.txt`
